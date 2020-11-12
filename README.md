@@ -1,2 +1,2 @@
-# remove-item-react-hooks-simple
+# remove-item-react-hooks
 Created with CodeSandbox
