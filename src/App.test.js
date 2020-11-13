@@ -1,11 +1,11 @@
 import React from "react"
 import { shallow, configure } from "enzyme"
 import Adapter from "enzyme-adapter-react-16"
+// enzyme-adapter-react-17 not available yet
 import App from "./App"
 
 // Required enzyme configuration
 configure({ adapter: new Adapter() })
-// enzyme-adapter-react-17 not available yet
 
 let app
 beforeEach(() => {
@@ -13,52 +13,48 @@ beforeEach(() => {
   app = shallow(<App />)
 })
 
-it("Adds a new fruit to the list when clicking `Add Fruit`", () => {
-  const initialCount = app.find("ul").children().length
-  app.find("button.remove-fruit").first().simulate("click")
-  expect(app.find("ul").children().length).toEqual(initialCount - 1)
+it("Adds a new emoji to the list when clicking `Add Random Emoji`", () => {
+  const initialCount = app.find("ul.emoji-list li").length
+  app.find("button.add-emoji").first().simulate("click")
+  expect(app.find("ul.emoji-list li").length).toEqual(initialCount + 1)
 })
 
-it("Removes a fruit from the list when clicking `X`", () => {
-  const initialCount = app.find("ul.fruit-list li").children().length
+it("Removes a random emoji when clicking `Remove a Random Emoji` button", () => {
+  const initialCount = app.find("ul.emoji-list li").length
+  app.find("button.remove-random-emoji").simulate("click")
+  expect(app.find("ul.emoji-list li").length).toEqual(initialCount - 1)
+})
+
+it("Removes a emoji from the list when clicking `X`", () => {
+  const initialCount = app.find("ul.emoji-list li").length
   app
-    .find("ul.fruit-list li")
-    .find("button.remove-fruit")
+    .find("ul.emoji-list li")
     .first()
+    .find("button.remove-emoji")
     .simulate("click")
-  expect(app.find("ul.fruit-list li").length).toEqual(initialCount - 1)
+  expect(app.find("ul.emoji-list li").length).toEqual(initialCount - 1)
 })
 
-it("Removes the right fruit from the list when clicking `X`", () => {
-  const aFruit = app.find("ul.fruit-list li").first()
-  const initialKey = aFruit.key()
+it("Removes the right emoji from the list when clicking `X`", () => {
+  const highlightedEmoji = app.find("ul.emoji-list li").first()
+  const emoji = highlightedEmoji.key() // or highlightedEmoji.text() as they're the same
   expect(
-    app.find("ul.fruit-list").findWhere((n) => n.key() === initialKey).length
+    app.find("ul.emoji-list").findWhere((n) => n.key() === emoji).length
   ).toEqual(1)
-  aFruit.find("button.remove-fruit").simulate("click")
+  highlightedEmoji.find("button.remove-emoji").simulate("click")
   expect(
-    app.find("ul.fruit-list").findWhere((n) => n.key() === initialKey).length
+    app.find("ul.emoji-list").findWhere((n) => n.key() === emoji).length
   ).toEqual(0)
 })
 
-it("Removes all of the right fruit from the list when clicking `Remove All {fruit}`", () => {
-  const fruitTR = app.find("table.fruit-index tbody tr").first()
-  const fruit = fruitTR.props()["fruit"]
+it("Removes the highlighted emoji when clicking `Remove Highlighted Emoji at Index {randomIndex}` button", () => {
+  const highlightedEmoji = app.find("ul.emoji-list li .highlight")
+  const emoji = highlightedEmoji.text()
   expect(
-    app
-      .find("ul.fruit-list li")
-      .findWhere((n) => n.type() === "li" && n.text() === fruit).length
+    app.find("ul.emoji-list").findWhere((n) => n.key() === emoji).length
   ).toEqual(1)
-  fruitTR.find("button.remove-all-fruit").simulate("click")
+  app.find("button.remove-emoji-at-index").simulate("click")
   expect(
-    app
-      .find("ul.fruit-list li")
-      .findWhere((n) => n.type() === "li" && n.text() === fruit).length
+    app.find("ul.emoji-list").findWhere((n) => n.key() === emoji).length
   ).toEqual(0)
-})
-
-it("Removes a random fruit when clicking `Remove a Random fruit` button", () => {
-  const initialCount = app.find("ul.fruit-list li").children().length
-  app.find("button.remove-random-fruit").simulate("click")
-  expect(app.find("ul.fruit-list li").length).toEqual(initialCount - 1)
 })
